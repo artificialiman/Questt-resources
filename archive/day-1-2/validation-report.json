@@ -1,0 +1,167 @@
+{
+  "timestamp": "2026-02-17T14:48:39.470751Z",
+  "summary": {
+    "total_files": 10,
+    "valid_files": 9,
+    "invalid_files": 1,
+    "validation_status": "PARTIAL"
+  },
+  "valid_files": [
+    "JAMB_Commerce_Q1-35.txt",
+    "JAMB_Accounting_Q1-35.txt",
+    "JAMB_CRS_Q1-35.txt",
+    "JAMB_Chemistry_Q1-35.txt",
+    "JAMB_Mathematics_Q1-35.txt",
+    "JAMB_Literature_Q1-35.txt",
+    "JAMB_Government_Q1-35.txt",
+    "JAMB_English_Q1-35.txt",
+    "JAMB_Biology_Q1-35.txt"
+  ],
+  "invalid_files": [
+    "JAMB_Physics_Q1-35.txt"
+  ],
+  "details": {
+    "JAMB_Commerce_Q1-35.txt": {
+      "filename": "JAMB_Commerce_Q1-35.txt",
+      "filepath": "JAMB_Commerce_Q1-35.txt",
+      "subject": "Commerce",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "metadata": {
+        "file_size_bytes": 4664,
+        "question_count": 35,
+        "subject": "Commerce",
+        "has_duplicates": false
+      }
+    },
+    "JAMB_Accounting_Q1-35.txt": {
+      "filename": "JAMB_Accounting_Q1-35.txt",
+      "filepath": "JAMB_Accounting_Q1-35.txt",
+      "subject": "Accounting",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "metadata": {
+        "file_size_bytes": 4549,
+        "question_count": 35,
+        "subject": "Accounting",
+        "has_duplicates": false
+      }
+    },
+    "JAMB_CRS_Q1-35.txt": {
+      "filename": "JAMB_CRS_Q1-35.txt",
+      "filepath": "JAMB_CRS_Q1-35.txt",
+      "subject": "Crs",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "metadata": {
+        "file_size_bytes": 3641,
+        "question_count": 35,
+        "subject": "Crs",
+        "has_duplicates": false
+      }
+    },
+    "JAMB_Chemistry_Q1-35.txt": {
+      "filename": "JAMB_Chemistry_Q1-35.txt",
+      "filepath": "JAMB_Chemistry_Q1-35.txt",
+      "subject": "Chemistry",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "metadata": {
+        "file_size_bytes": 11618,
+        "question_count": 35,
+        "subject": "Chemistry",
+        "has_duplicates": false
+      }
+    },
+    "JAMB_Mathematics_Q1-35.txt": {
+      "filename": "JAMB_Mathematics_Q1-35.txt",
+      "filepath": "JAMB_Mathematics_Q1-35.txt",
+      "subject": "Mathematics",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "metadata": {
+        "file_size_bytes": 8745,
+        "question_count": 35,
+        "subject": "Mathematics",
+        "has_duplicates": false
+      }
+    },
+    "JAMB_Physics_Q1-35.txt": {
+      "filename": "JAMB_Physics_Q1-35.txt",
+      "filepath": "JAMB_Physics_Q1-35.txt",
+      "subject": "Physics",
+      "valid": false,
+      "errors": [
+        "Block 12: Failed to parse question",
+        "Expected 35 questions, got 34",
+        "Missing question numbers: [12]"
+      ],
+      "warnings": [],
+      "metadata": {
+        "file_size_bytes": 11545
+      }
+    },
+    "JAMB_Literature_Q1-35.txt": {
+      "filename": "JAMB_Literature_Q1-35.txt",
+      "filepath": "JAMB_Literature_Q1-35.txt",
+      "subject": "Literature",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "metadata": {
+        "file_size_bytes": 4229,
+        "question_count": 35,
+        "subject": "Literature",
+        "has_duplicates": false
+      }
+    },
+    "JAMB_Government_Q1-35.txt": {
+      "filename": "JAMB_Government_Q1-35.txt",
+      "filepath": "JAMB_Government_Q1-35.txt",
+      "subject": "Government",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "metadata": {
+        "file_size_bytes": 4704,
+        "question_count": 35,
+        "subject": "Government",
+        "has_duplicates": false
+      }
+    },
+    "JAMB_English_Q1-35.txt": {
+      "filename": "JAMB_English_Q1-35.txt",
+      "filepath": "JAMB_English_Q1-35.txt",
+      "subject": "English",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "metadata": {
+        "file_size_bytes": 12691,
+        "question_count": 35,
+        "subject": "English",
+        "has_duplicates": false
+      }
+    },
+    "JAMB_Biology_Q1-35.txt": {
+      "filename": "JAMB_Biology_Q1-35.txt",
+      "filepath": "JAMB_Biology_Q1-35.txt",
+      "subject": "Biology",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "metadata": {
+        "file_size_bytes": 4426,
+        "question_count": 35,
+        "subject": "Biology",
+        "has_duplicates": false
+      }
+    }
+  },
+  "warnings": []
+}
