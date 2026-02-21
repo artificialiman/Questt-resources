@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Arts: ELGC — Progressive Quiz</title>
+    <style>
+        :root {
+            --ios-bg:#F2F2F7; --ios-card:#FFFFFF; --ios-text:#000000;
+            --ios-text-secondary:rgba(60,60,67,0.85); --ios-text-tertiary:rgba(60,60,67,0.55);
+            --ios-blue:#007AFF; --ios-green:#34C759; --ios-red:#FF3B30;
+            --ios-orange:#FF9500; --ios-purple:#AF52DE; --ios-teal:#30B0C7; --ios-indigo:#5856D6;
+            --ios-separator:rgba(198,198,200,0.5); --ios-hover:#F8F8FA;
+            --radius:12px; --shadow:0 1px 3px rgba(0,0,0,0.08);
+        }
+        @media(prefers-color-scheme:dark){
+            :root{--ios-bg:#000;--ios-card:#1C1C1E;--ios-text:#FFF;
+            --ios-text-secondary:rgba(235,235,245,0.85);--ios-text-tertiary:rgba(235,235,245,0.55);
+            --ios-separator:rgba(56,56,58,0.5);--ios-hover:#2C2C2E;}
+        }
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+        body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-serif;
+            font-size:17px;color:var(--ios-text);background:var(--ios-bg);line-height:1.47;
+            padding-bottom:env(safe-area-inset-bottom);-webkit-font-smoothing:antialiased}
+        .header{background:var(--ios-card);border-bottom:.5px solid var(--ios-separator);
+            padding:calc(env(safe-area-inset-top) + 16px) 16px 16px;
+            position:sticky;top:0;z-index:100;backdrop-filter:blur(20px)}
+        .title{font-size:28px;font-weight:700;margin-bottom:4px}
+        .subtitle{font-size:15px;color:var(--ios-text-tertiary)}
+        .stats{display:flex;gap:12px;padding:16px}
+        .stat-box{flex:1;background:var(--ios-card);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow)}
+        .stat-label{font-size:13px;color:var(--ios-text-tertiary)}
+        .stat-value{font-size:24px;font-weight:700;margin-top:4px}
+        .tabs{display:flex;gap:12px;padding:0 16px 16px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+        .tabs::-webkit-scrollbar{display:none}
+        .tab{padding:8px 16px;border-radius:20px;background:var(--ios-card);color:var(--ios-text-secondary);
+            border:none;font-size:15px;font-weight:500;cursor:pointer;white-space:nowrap;
+            transition:all .2s;box-shadow:var(--shadow)}
+        .tab.active{background:var(--ios-blue);color:white}
+        .question-card{background:var(--ios-card);border-radius:var(--radius);margin:12px 16px;padding:20px;box-shadow:var(--shadow)}
+        .question-number{font-size:13px;font-weight:600;color:var(--ios-blue);margin-bottom:8px}
+        .stage-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;margin-left:8px}
+        .stage-principles{background:rgba(0,122,255,.15);color:var(--ios-blue)}
+        .stage-exceptions{background:rgba(255,149,0,.15);color:var(--ios-orange)}
+        .stage-applications{background:rgba(175,82,222,.15);color:var(--ios-purple)}
+        .subject-tag{display:inline-block;padding:3px 8px;border-radius:5px;font-size:11px;font-weight:600;margin-left:6px;vertical-align:middle}
+        .tag-English{background:rgba(48,176,199,.15);color:var(--ios-teal)}
+        .tag-Literature{background:rgba(88,86,214,.15);color:var(--ios-indigo)}
+        .tag-Government{background:rgba(52,199,89,.15);color:var(--ios-green)}
+        .tag-CRS{background:rgba(255,59,48,.15);color:var(--ios-red)}
+        .question-text{font-size:17px;margin-bottom:16px;line-height:1.5}
+        .timer-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+        .timer-ring{width:38px;height:38px;flex-shrink:0}
+        .timer-ring .bg{fill:none;stroke:var(--ios-separator);stroke-width:4}
+        .timer-ring .fg{fill:none;stroke:var(--ios-green);stroke-width:4;stroke-linecap:round;
+            transition:stroke .4s,stroke-dashoffset .25s linear;transform:rotate(-90deg);transform-origin:center}
+        .timer-text{font-size:14px;font-weight:600;color:var(--ios-green);transition:color .4s;min-width:42px}
+        .timer-label{font-size:13px;color:var(--ios-text-tertiary)}
+        .timer-ring.warning .fg{stroke:var(--ios-orange)} .timer-ring.danger .fg{stroke:var(--ios-red)}
+        .timer-text.warning{color:var(--ios-orange)} .timer-text.danger{color:var(--ios-red)}
+        .options{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+        .option{padding:12px;border-radius:8px;background:var(--ios-hover);cursor:pointer;
+            transition:all .2s;font-size:15px;border:2px solid transparent;user-select:none}
+        .option:active{transform:scale(.98)}
+        .option.selected{background:rgba(0,122,255,.1);border-color:var(--ios-blue)}
+        .option.correct{background:rgba(52,199,89,.1);border-color:var(--ios-green)}
+        .option.wrong{background:rgba(255,59,48,.1);border-color:var(--ios-red)}
+        .answer-btn{width:100%;padding:12px;border-radius:10px;border:none;background:var(--ios-blue);
+            color:white;font-size:17px;font-weight:500;cursor:pointer;transition:opacity .2s}
+        .answer-btn:active{opacity:.8} .answer-btn:disabled{opacity:.5;cursor:not-allowed}
+        .explanation{margin-top:16px;padding:12px;background:var(--ios-hover);border-radius:8px;
+            font-size:15px;color:var(--ios-text-secondary);display:none}
+        .explanation.show{display:block;animation:slideIn .3s ease}
+        .exception-note{margin-top:8px;padding:8px;background:rgba(255,149,0,.1);border-radius:6px;
+            font-size:13px;color:var(--ios-orange);border-left:3px solid var(--ios-orange)}
+        @keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+    </style>
+</head>
+<body>
+<div class="header">
+    <div class="title">Arts: ELGC</div>
+    <div class="subtitle">Progressive Learning &middot; Laws &rarr; Exceptions &rarr; Applications</div>
+</div>
+<div class="stats">
+    <div class="stat-box"><div class="stat-label">Answered</div><div class="stat-value" id="answered">0</div></div>
+    <div class="stat-box"><div class="stat-label">Correct</div><div class="stat-value" id="correct">0</div></div>
+    <div class="stat-box"><div class="stat-label">Score</div><div class="stat-value" id="score">0%</div></div>
+</div>
+<div class="tabs">
+    <button class="tab active" data-subject="english">English</button>
+    <button class="tab" data-subject="literature">Literature</button>
+    <button class="tab" data-subject="government">Government</button>
+    <button class="tab" data-subject="crs">CRS</button>
+</div>
+<div id="questions-container"></div>
+<script>
+
+const questions = {
+  english: [
+    { q:"Choose the word OPPOSITE in meaning to 'ephemeral'", opts:["A. Brief","B. Permanent","C. Fleeting","D. Temporary"], ans:"B", exp:"Ephemeral means short-lived; permanent is the opposite.", stage:"principles" },
+    { q:"Select the option with the same vowel sound as 'bear'", opts:["A. Fear","B. Fare","C. Near","D. Hear"], ans:"B", exp:"Bear and fare share the /eə/ sound.", stage:"principles" },
+    { q:'In "The jury are divided in their opinions", the verb "are" agrees with:', opts:["A. Jury (collective plural idea)","B. Opinions","C. The subject complement","D. Implied members"], ans:"A", exp:"When a collective noun indicates individual action, a plural verb is used.", stage:"principles" },
+    { q:'Identify the literary device: "The pen is mightier than the sword."', opts:["A. Metonymy","B. Oxymoron","C. Synecdoche","D. Irony"], ans:"A", exp:"Pen represents writing, sword represents military force — metonymy.", stage:"principles" },
+    { q:'Which sentence uses "effect" correctly?', opts:["A. The new law will effect the economy.","B. The effect of the medicine was immediate.","C. We need to effect change quickly.","D. Both B and C"], ans:"D", exp:"Effect as noun (result) or verb (to bring about) — both B and C are correct.", stage:"principles" },
+    { q:"Choose the correctly punctuated sentence:", opts:['A. She asked, "when does the bus leave"?','B. She asked "when does the bus leave?"','C. She asked, "When does the bus leave?"','D. She asked: "When does the bus leave?"'], ans:"C", exp:"Comma before quote, capital letter, question mark inside quotes.", stage:"principles" },
+    { q:'Identify the error: "Every one of the players have arrived."', opts:["A. Verb tense","B. Subject-verb agreement","C. Pronoun agreement","D. No error"], ans:"B", exp:'Every one is singular, so should be "has arrived".', stage:"principles" },
+    { q:'The prefix "post-" in "posthumous" means:', opts:["A. Before","B. After","C. During","D. Beyond"], ans:"B", exp:"Posthumous = after death.", stage:"principles" },
+    { q:"Choose the correctly spelled word:", opts:["A. Accommodate","B. Acommodate","C. Accommodatie","D. Acomodate"], ans:"A", exp:"Double c, double m — accommodate.", stage:"principles" },
+    { q:'"No sooner had he arrived _____ he fell ill."', opts:["A. Than","B. Then","C. When","D. That"], ans:"A", exp:"No sooner ... than — correct correlative.", stage:"principles" },
+    { q:'Identify the correct pronoun: "Neither of the girls brought _____ umbrella."', opts:["A. Their","B. His","C. Her","D. Its"], ans:"C", exp:"Neither (singular) + feminine reference → her.", stage:"principles" },
+    { q:'The word "cleave" is an example of a:', opts:["A. Contranym","B. Homophone","C. Euphemism","D. Cognate"], ans:"A", exp:"Cleave can mean to split or to cling — opposite meanings (autoantonym).", stage:"principles" },
+    { q:"Which uses the subjunctive correctly?", opts:["A. I suggest that he goes early.","B. It is important that she be present.","C. If I was you, I would wait.","D. She insisted that he stays."], ans:"B", exp:'Subjunctive uses base form "be" after verbs like suggest/insist/important.', stage:"exceptions" },
+    { q:'Identify the misplaced modifier: "Covered in frosting, the child devoured the cupcake."', opts:["A. Covered in frosting (illogically modifies child)","B. No modifier error","C. Devoured — wrong tense","D. Cupcake should be plural"], ans:"A", exp:"It sounds like the child was covered in frosting.", stage:"exceptions" },
+    { q:'The word "nice" once meant foolish; now it means pleasant. This semantic change is:', opts:["A. Pejoration","B. Amelioration","C. Generalization","D. Specialization"], ans:"B", exp:"Amelioration = meaning becomes more positive over time.", stage:"exceptions" },
+    { q:"Choose the correct form: 'He is taller than _____'", opts:["A. Me","B. I","C. Myself","D. Mine"], ans:"B", exp:"Formal: than I (am).", stage:"exceptions" },
+    { q:"Which sentence has parallel structure?", opts:["A. She enjoys hiking, to swim, and biking.","B. She enjoys hiking, swimming, and biking.","C. She enjoys to hike, to swim, and biking.","D. She enjoys hiking, and to swim."], ans:"B", exp:"All gerunds.", stage:"exceptions" },
+    { q:'"Literally" is often misused as:', opts:["A. Figuratively","B. An intensifier","C. Both A and B","D. None of the above"], ans:"B", exp:"It is now used for emphasis even in non-literal contexts.", stage:"exceptions" },
+    { q:'Identify the paradox: "I must be cruel to be kind."', opts:["A. Oxymoron","B. Paradox","C. Antithesis","D. Simile"], ans:"B", exp:"A self-contradictory statement that reveals a deeper truth.", stage:"exceptions" },
+    { q:'Change to active voice: "The ball was caught by the fielder."', opts:["A. The fielder caught the ball.","B. The fielder has caught the ball.","C. The ball was caught.","D. The fielder did catch the ball."], ans:"A", exp:"Simple past active.", stage:"exceptions" },
+    { q:'Choose correct comma usage: "We visited Paris France in July."', opts:["A. We visited Paris, France in July.","B. We visited Paris, France, in July.","C. We visited Paris France, in July.","D. We visited Paris, France in, July."], ans:"B", exp:"Comma between city and country, and after country when sentence continues.", stage:"exceptions" },
+    { q:'Error: "The reason he left is because he was tired."', opts:["A. Redundancy","B. Verb tense","C. No error","D. Wrong pronoun"], ans:"A", exp:'"Reason ... because" is redundant; use "reason ... that".', stage:"exceptions" },
+    { q:'"Phenomena" is the plural of:', opts:["A. Phenomenon","B. Phenomenum","C. Phenomenos","D. Phenomen"], ans:"A", exp:"Greek origin: phenomenon (sg), phenomena (pl).", stage:"applications" },
+    { q:'Identify the malapropism: "He was a man of great statue."', opts:["A. Statue instead of stature","B. Great misused","C. Man should be person","D. No error"], ans:"A", exp:"Statue (carved figure) vs stature (standing/height/reputation).", stage:"applications" },
+    { q:'"Who did you see?" — this is:', opts:["A. Informal but common","B. Grammatically correct formal","C. Archaic","D. Standard written English"], ans:"A", exp:'Whom is the correct object form, but "who" is widely accepted in conversation.', stage:"applications" },
+    { q:"If I _____ you, I would apologize.", opts:["A. Was","B. Were","C. Am","D. Be"], ans:"B", exp:"Subjunctive for contrary-to-fact conditions: were.", stage:"applications" },
+    { q:'"Enervate" means:', opts:["A. To energize","B. To weaken","C. To strengthen","D. To annoy"], ans:"B", exp:"Enervate = to drain of energy or vitality.", stage:"applications" },
+    { q:'In "It is I who _____ responsible," the correct verb is:', opts:["A. Is","B. Am","C. Are","D. Be"], ans:"B", exp:"The antecedent of who is I → I am.", stage:"applications" },
+    { q:"Split infinitive example:", opts:["A. To always be happy","B. Always to be happy","C. To be always happy","D. Happy to always be"], ans:"A", exp:"to + adverb + verb = split infinitive.", stage:"applications" },
+    { q:'"Fulsome praise" means:', opts:["A. Abundant and sincere","B. Excessive and insincere","C. Minimal","D. Well-deserved"], ans:"B", exp:"Fulsome often carries a negative connotation: excessive, cloying.", stage:"applications" },
+    { q:'Choose correct: "One of the boys _____ locked out."', opts:["A. Were","B. Was","C. Are","D. Have been"], ans:"B", exp:"One (singular) + of the boys → was.", stage:"applications" },
+    { q:'Identify the function of "swimming" in "Swimming is fun."', opts:["A. Gerund","B. Participle","C. Infinitive","D. Finite verb"], ans:"A", exp:"Swimming functions as the subject of the sentence — a gerund.", stage:"applications" },
+    { q:'The sentence "He goed to school" is:', opts:["A. Child language (overregularization)","B. Dialect","C. A simple error only","D. Archaic English"], ans:"A", exp:"The child applies the regular -ed past tense rule to an irregular verb.", stage:"applications" },
+    { q:'Zeugma: "He lost his temper and his wallet."', opts:["A. Two meanings of lost applied simultaneously","B. Simile","C. Personification","D. Litotes"], ans:"A", exp:"Lost applies both figuratively (temper) and literally (wallet).", stage:"applications" },
+    { q:"Onomatopoeia example:", opts:["A. Buzz","B. Light","C. Tree","D. Run"], ans:"A", exp:"Buzz imitates the sound it describes.", stage:"applications" },
+  ],
+
+  literature: [
+    { q:"A traditional story explaining natural phenomena is a:", opts:["A. Myth","B. Legend","C. Fable","D. Ballad"], ans:"A", stage:"principles" },
+    { q:"'All the world's a stage' is an example of:", opts:["A. Metaphor","B. Simile","C. Personification","D. Apostrophe"], ans:"A", stage:"principles" },
+    { q:"A play with exaggerated emotions and simplistic characters:", opts:["A. Melodrama","B. Farce","C. Tragedy","D. Comedy of manners"], ans:"A", stage:"principles" },
+    { q:"The character who opposes the protagonist:", opts:["A. Antagonist","B. Foil","C. Narrator","D. Confidant"], ans:"A", stage:"principles" },
+    { q:'Author of "Weep Not, Child"?', opts:["A. Ngugi wa Thiong'o","B. Chinua Achebe","C. Mongo Beti","D. Ferdinand Oyono"], ans:"A", stage:"principles" },
+    { q:'"O heavy lightness" is an:', opts:["A. Oxymoron","B. Paradox","C. Irony","D. Antithesis"], ans:"A", stage:"principles" },
+    { q:"Repetition of vowel sounds:", opts:["A. Assonance","B. Consonance","C. Alliteration","D. Rhyme"], ans:"A", stage:"principles" },
+    { q:"A 14-line poem with a turn:", opts:["A. Sonnet","B. Villanelle","C. Sestina","D. Haiku"], ans:"A", stage:"principles" },
+    { q:"The emotional atmosphere of a work:", opts:["A. Mood","B. Tone","C. Voice","D. Style"], ans:"A", stage:"principles" },
+    { q:"In drama, a long speech by one character alone revealing inner thoughts:", opts:["A. Soliloquy","B. Monologue","C. Aside","D. Dialogue"], ans:"A", stage:"principles" },
+    { q:"The central idea of a story:", opts:["A. Theme","B. Plot","C. Motif","D. Leitmotif"], ans:"A", stage:"principles" },
+    { q:'Who wrote "The Interpreters"?', opts:["A. Wole Soyinka","B. J.P. Clark","C. Christopher Okigbo","D. Ben Okri"], ans:"A", stage:"principles" },
+    { q:"A long narrative poem about heroic deeds:", opts:["A. Epic","B. Lay","C. Ballad","D. Romance"], ans:"A", stage:"exceptions" },
+    { q:"Pattern of stressed/unstressed syllables:", opts:["A. Meter","B. Rhythm","C. Feet","D. Cadence"], ans:"A", stage:"exceptions" },
+    { q:"Giving human traits specifically to an animal:", opts:["A. Personification","B. Anthropomorphism","C. Zoomorphism","D. Pathetic fallacy"], ans:"B", stage:"exceptions" },
+    { q:"The locale of a story:", opts:["A. Setting","B. Milieu","C. Background","D. Scene"], ans:"A", stage:"exceptions" },
+    { q:"A poem of mourning:", opts:["A. Elegy","B. Threnody","C. Dirge","D. Lament"], ans:"A", stage:"exceptions" },
+    { q:"Narrator who knows all:", opts:["A. Omniscient","B. Limited","C. Unreliable","D. Stream of consciousness"], ans:"A", stage:"exceptions" },
+    { q:"Struggle between opposing forces:", opts:["A. Conflict","B. Suspense","C. Climax","D. Denouement"], ans:"A", stage:"exceptions" },
+    { q:'Who wrote "The Marriage of Anansewa"?', opts:["A. Efua Sutherland","B. Ama Ata Aidoo","C. Zulu Sofola","D. J.P. Clark"], ans:"A", stage:"exceptions" },
+    { q:"Use of symbols to represent ideas:", opts:["A. Symbolism","B. Allegory","C. Imagery","D. Archetype"], ans:"A", stage:"exceptions" },
+    { q:"The one who tells the story:", opts:["A. Narrator","B. Speaker","C. Voice","D. Persona"], ans:"A", stage:"exceptions" },
+    { q:"Light, humorous play with exaggerated plot:", opts:["A. Farce","B. Comedy","C. Satire","D. Burlesque"], ans:"A", stage:"applications" },
+    { q:"Repetition of consonant sounds in nearby words:", opts:["A. Consonance","B. Alliteration","C. Assonance","D. Cacophony"], ans:"A", stage:"applications" },
+    { q:"Words spoken by a character unheard by others on stage:", opts:["A. Aside","B. Soliloquy","C. Monologue","D. Chorus"], ans:"A", stage:"applications" },
+    { q:'Author of "The Beautyful Ones Are Not Yet Born"?', opts:["A. Ayi Kwei Armah","B. Kofi Awoonor","C. Ama Ata Aidoo","D. Chinua Achebe"], ans:"A", stage:"applications" },
+    { q:"Brief story with animal characters and a moral lesson:", opts:["A. Fable","B. Parable","C. Apologue","D. Allegory"], ans:"A", stage:"applications" },
+    { q:"Point of highest tension in a narrative:", opts:["A. Climax","B. Crisis","C. Turning point","D. Peripeteia"], ans:"A", stage:"applications" },
+    { q:"Words that imitate sounds:", opts:["A. Onomatopoeia","B. Echoism","C. Sound symbolism","D. Phonesthesia"], ans:"A", stage:"applications" },
+    { q:'Who wrote "So Long a Letter"?', opts:["A. Mariama Bâ","B. Aminata Sow Fall","C. Ken Bugul","D. Nawal El Saadawi"], ans:"A", stage:"applications" },
+    { q:"Saying the opposite of what is meant:", opts:["A. Irony","B. Sarcasm","C. Satire","D. Understatement"], ans:"A", stage:"applications" },
+    { q:"Short religious story teaching a moral:", opts:["A. Parable","B. Homily","C. Exemplum","D. Fable"], ans:"A", stage:"applications" },
+    { q:"Sequence of events in a story:", opts:["A. Plot","B. Storyline","C. Narrative","D. Action"], ans:"A", stage:"applications" },
+    { q:"Group of lines forming a unit in a poem:", opts:["A. Stanza","B. Verse paragraph","C. Canto","D. Section"], ans:"A", stage:"applications" },
+    { q:'Author of "The Joys of Motherhood"?', opts:["A. Buchi Emecheta","B. Flora Nwapa","C. Chimamanda Adichie","D. Zaynab Alkali"], ans:"A", stage:"applications" },
+  ],
+
+  government: [
+    { q:"Government by the few for the few:", opts:["A. Oligarchy","B. Plutocracy","C. Aristocracy","D. Timocracy"], ans:"A", stage:"principles" },
+    { q:"The body of fundamental laws:", opts:["A. Constitution","B. Statute","C. Act","D. Decree"], ans:"A", stage:"principles" },
+    { q:"Separation of powers theorist:", opts:["A. Montesquieu","B. Locke","C. Hobbes","D. Rousseau"], ans:"A", stage:"principles" },
+    { q:"Federal system shares power between:", opts:["A. Central and regional govts","B. Executive and judiciary","C. Upper and lower houses","D. Military and civilian"], ans:"A", stage:"principles" },
+    { q:"Right to vote is called:", opts:["A. Suffrage","B. Franchise","C. Both A and B","D. Electorate"], ans:"C", stage:"principles" },
+    { q:"Interprets laws:", opts:["A. Judiciary","B. Executive","C. Legislature","D. Civil service"], ans:"A", stage:"principles" },
+    { q:"Year of Nigeria’s independence:", opts:["A. 1960","B. 1963","C. 1959","D. 1966"], ans:"A", stage:"principles" },
+    { q:"Checks and balances prevent:", opts:["A. Abuse of power","B. Democracy","C. Rule of law","D. Federalism"], ans:"A", stage:"principles" },
+    { q:"Citizens vote on laws directly:", opts:["A. Direct democracy","B. Representative democracy","C. Plebiscitary democracy","D. Participatory democracy"], ans:"A", stage:"principles" },
+    { q:"Head of state in parliamentary system:", opts:["A. Monarch or ceremonial president","B. Prime minister","C. Chancellor","D. Speaker"], ans:"A", stage:"principles" },
+    { q:"Law passed by legislature:", opts:["A. Act","B. Bill","C. Decree","D. Edict"], ans:"A", stage:"principles" },
+    { q:"Bill becomes law after:", opts:["A. Three readings and assent","B. First reading","C. Presidential proclamation","D. Gazetting"], ans:"A", stage:"principles" },
+    { q:"Essential feature of democracy:", opts:["A. Free and fair elections","B. One-party system","C. Military veto","D. Censorship"], ans:"A", stage:"exceptions" },
+    { q:"Supremacy of constitution means:", opts:["A. All laws must conform to it","B. It is written","C. It is rigid","D. It is federal"], ans:"A", stage:"exceptions" },
+    { q:"Local government is which tier?", opts:["A. Third","B. Second","C. First","D. Fourth"], ans:"A", stage:"exceptions" },
+    { q:"Removal of president from office:", opts:["A. Impeachment","B. Recall","C. Censure","D. Vote of no confidence"], ans:"A", stage:"exceptions" },
+    { q:"Universal adult suffrage means:", opts:["A. All adults can vote","B. Only literates vote","C. Only property owners vote","D. Both sexes but not all"], ans:"A", stage:"exceptions" },
+    { q:"Nigerian citizenship is acquired by:", opts:["A. Birth, registration, naturalization","B. Only birth","C. Only marriage","D. Only by descent"], ans:"A", stage:"exceptions" },
+    { q:"No one is above the law:", opts:["A. Rule of law","B. Due process","C. Habeas corpus","D. Judicial review"], ans:"A", stage:"exceptions" },
+    { q:"Party that wins election:", opts:["A. Ruling party","B. Opposition","C. Minority party","D. Coalition"], ans:"A", stage:"exceptions" },
+    { q:"Delegated legislation is made by:", opts:["A. Executive agencies","B. Parliament","C. Courts","D. Political parties"], ans:"A", stage:"exceptions" },
+    { q:"Referendum is:", opts:["A. Popular vote on an issue","B. Election of officials","C. Recall of legislators","D. Party primary"], ans:"A", stage:"exceptions" },
+    { q:"Bicameral legislature has:", opts:["A. Two houses","B. One house","C. Three houses","D. Four houses"], ans:"A", stage:"applications" },
+    { q:"Clifford constitution (1922) introduced:", opts:["A. Elective principle","B. Federalism","C. Regional autonomy","D. Universal suffrage"], ans:"A", stage:"applications" },
+    { q:"Nigeria’s law-making body:", opts:["A. National Assembly","B. Supreme Court","C. Council of State","D. Federal Executive Council"], ans:"A", stage:"applications" },
+    { q:"Political socialization means:", opts:["A. Learning political values","B. Forming parties","C. Voting","D. Campaigning"], ans:"A", stage:"applications" },
+    { q:"First military coup in Nigeria:", opts:["A. 1966","B. 1960","C. 1963","D. 1967"], ans:"A", stage:"applications" },
+    { q:"Fundamental rights are in:", opts:["A. Constitution","B. Criminal code","C. Electoral act","D. Penal code"], ans:"A", stage:"applications" },
+    { q:"Public corporations provide:", opts:["A. Essential services","B. Profit maximization","C. Tax collection","D. Defense"], ans:"A", stage:"applications" },
+    { q:"Proportional representation is an:", opts:["A. Electoral system","B. System of govt","C. Checks and balances mechanism","D. Ideology"], ans:"A", stage:"applications" },
+    { q:"Civil service belongs to:", opts:["A. Executive","B. Legislature","C. Judiciary","D. Parastatals"], ans:"A", stage:"applications" },
+    { q:"First executive president of Nigeria:", opts:["A. Shehu Shagari","B. Nnamdi Azikiwe","C. Tafawa Balewa","D. Olusegun Obasanjo"], ans:"A", stage:"applications" },
+    { q:"Two-party system is typical of:", opts:["A. USA","B. Nigeria","C. China","D. France"], ans:"A", stage:"applications" },
+    { q:"Public opinion expressed through:", opts:["A. Mass media","B. Military","C. Civil service","D. Courts"], ans:"A", stage:"applications" },
+    { q:"Government accountable to people:", opts:["A. Democracy","B. Monarchy","C. Autocracy","D. Theocracy"], ans:"A", stage:"applications" },
+  ],
+
+  crs: [
+    { q:"God created man on which day?", opts:["A. Sixth day","B. Fifth day","C. Third day","D. Fourth day"], ans:"A", stage:"principles" },
+    { q:"First murderer in the Bible:", opts:["A. Cain","B. Abel","C. Lamech","D. Jabal"], ans:"A", stage:"principles" },
+    { q:"Covenant with Abraham:", opts:["A. Many descendants","B. Land only","C. Wealth","D. Long life"], ans:"A", stage:"principles" },
+    { q:"Mountain of Ten Commandments:", opts:["A. Sinai","B. Horeb","C. Zion","D. Carmel"], ans:"A", stage:"principles" },
+    { q:"Wisest king of Israel:", opts:["A. Solomon","B. David","C. Saul","D. Hezekiah"], ans:"A", stage:"principles" },
+    { q:"Prophet swallowed by a fish:", opts:["A. Jonah","B. Elijah","C. Elisha","D. Jeremiah"], ans:"A", stage:"principles" },
+    { q:"Jesus’ birth town:", opts:["A. Bethlehem","B. Nazareth","C. Jerusalem","D. Cana"], ans:"A", stage:"principles" },
+    { q:"Number of apostles:", opts:["A. Twelve","B. Seventy","C. Eleven","D. Thirteen"], ans:"A", stage:"principles" },
+    { q:"First miracle — turned water into:", opts:["A. Wine","B. Oil","C. Milk","D. Honey"], ans:"A", stage:"principles" },
+    { q:"Betrayer of Jesus:", opts:["A. Judas Iscariot","B. Peter","C. Thomas","D. Andrew"], ans:"A", stage:"principles" },
+    { q:"Place of crucifixion:", opts:["A. Golgotha","B. Gethsemane","C. Bethany","D. Bethesda"], ans:"A", stage:"principles" },
+    { q:"Greatest commandment — love:", opts:["A. God and neighbor","B. Parents","C. Enemies","D. Self"], ans:"A", stage:"principles" },
+    { q:"Pentecost came how many days after Jesus’ ascension?", opts:["A. Fifty (from resurrection)","B. Forty","C. Ten (from ascension)","D. Seven"], ans:"C", exp:"Jesus ascended 40 days after resurrection. Pentecost = 50 days from resurrection = 10 days after ascension.", stage:"exceptions" },
+    { q:"First Christian martyr:", opts:["A. Stephen","B. James","C. Peter","D. Paul"], ans:"A", stage:"exceptions" },
+    { q:"Paul’s former name:", opts:["A. Saul","B. Simon","C. Silas","D. Sergius"], ans:"A", stage:"exceptions" },
+    { q:"Fruit of the Spirit:", opts:["A. Love, joy, peace","B. Power, gifts","C. Faith, hope","D. Wisdom, knowledge"], ans:"A", stage:"exceptions" },
+    { q:"The lost sheep parable teaches:", opts:["A. God’s love for sinners","B. Judgment","C. End times","D. Tithing"], ans:"A", stage:"exceptions" },
+    { q:"Who baptized Jesus?", opts:["A. John the Baptist","B. Peter","C. Andrew","D. Philip"], ans:"A", stage:"exceptions" },
+    { q:"Shortest Bible verse:", opts:["A. Jesus wept","B. Pray always","C. Rejoice evermore","D. God is love"], ans:"A", stage:"exceptions" },
+    { q:"David’s adultery with:", opts:["A. Bathsheba","B. Abigail","C. Michal","D. Tamar"], ans:"A", stage:"exceptions" },
+    { q:"Good Samaritan teaches:", opts:["A. Love your neighbor","B. Prayer","C. Fasting","D. Almsgiving"], ans:"A", stage:"exceptions" },
+    { q:"Lazarus was dead for how many days?", opts:["A. Four","B. Three","C. Two","D. One"], ans:"A", stage:"exceptions" },
+    { q:"Garden of Jesus’ arrest:", opts:["A. Gethsemane","B. Eden","C. Mount of Olives","D. Calvary"], ans:"A", stage:"applications" },
+    { q:"Peter denied Jesus how many times?", opts:["A. Three","B. Seven","C. Twice","D. Once"], ans:"A", stage:"applications" },
+    { q:"Author of Acts of the Apostles:", opts:["A. Luke","B. Mark","C. Matthew","D. John"], ans:"A", stage:"applications" },
+    { q:"The wages of sin is:", opts:["A. Death","B. Hell","C. Sickness","D. Poverty"], ans:"A", stage:"applications" },
+    { q:'John 1:1 — "In the beginning was the ___"', opts:["A. Word","B. Son","C. Light","D. Life"], ans:"A", stage:"applications" },
+    { q:"The Beatitudes are found in:", opts:["A. Matthew","B. Luke","C. Mark","D. John"], ans:"A", stage:"applications" },
+    { q:"Paul’s conversion on road to:", opts:["A. Damascus","B. Jerusalem","C. Antioch","D. Tarsus"], ans:"A", stage:"applications" },
+    { q:"Jesus fasted for:", opts:["A. Forty days","B. Fourteen days","C. Thirty days","D. Seven days"], ans:"A", stage:"applications" },
+    { q:"Woman at the well was from:", opts:["A. Samaria","B. Galilee","C. Judea","D. Decapolis"], ans:"A", stage:"applications" },
+    { q:"Faith without works is:", opts:["A. Dead","B. Vain","C. Empty","D. Useless"], ans:"A", stage:"applications" },
+    { q:"God’s love is:", opts:["A. Unconditional","B. Conditional","C. Temporary","D. Limited"], ans:"A", stage:"applications" },
+    { q:"First church established in:", opts:["A. Jerusalem","B. Antioch","C. Rome","D. Ephesus"], ans:"A", stage:"applications" },
+    { q:'The Lord’s Prayer begins: "_____ in heaven"', opts:["A. Our Father","B. Father","C. God","D. Lord"], ans:"A", stage:"applications" },
+  ],
+};
+
+let currentSubject = 'english';
+let userAnswers = {};
+let stats = { answered: 0, correct: 0 };
+let timerIds = {};
+let timerSecs = {};
+const TOTAL_SECS = 120;
+const CIRC = 2 * Math.PI * 14;
+
+function renderQuestions() {
+    const container = document.getElementById('questions-container');
+    const qs = questions[currentSubject];
+    const label = currentSubject === 'crs' ? 'CRS'
+                : currentSubject.charAt(0).toUpperCase() + currentSubject.slice(1);
+    container.innerHTML = qs.map((q, i) => {
+        const sc = q.stage === 'principles' ? 'stage-principles'
+                 : q.stage === 'exceptions' ? 'stage-exceptions' : 'stage-applications';
+        const sn = q.stage === 'principles' ? 'Principles'
+                 : q.stage === 'exceptions' ? 'Exceptions' : 'Applications';
+        const expHtml = q.exp
+            ? '<b>\u2713 Correct: ' + q.ans + '<\/b><br>' + q.exp
+            : '<b>\u2713 Correct answer: ' + q.ans + '<\/b>';
+        return `<div class="question-card" data-index="${i}">
+            <div class="question-number">
+                Question ${i+1} of ${qs.length}
+                <span class="stage-badge ${sc}">${sn}</span>
+                <span class="subject-tag tag-${label}">${label}</span>
+            </div>
+            <div class="question-text">${q.q}</div>
+            <div class="timer-row">
+                <svg class="timer-ring" id="ring-${i}" viewBox="0 0 38 38">
+                    <circle class="bg" cx="19" cy="19" r="14"/>
+                    <circle class="fg" cx="19" cy="19" r="14" style="stroke-dasharray:${CIRC};stroke-dashoffset:0"/>
+                </svg>
+                <span class="timer-text" id="timer-text-${i}">2:00</span>
+                <span class="timer-label">left</span>
+            </div>
+            <div class="options">${q.opts.map(o=>`<div class="option" data-answer="${o.charAt(0)}">${o}</div>`).join('')}</div>
+            <button class="answer-btn" disabled>Check Answer</button>
+            <div class="explanation">${expHtml}</div>
+        </div>`;
+    }).join('');
+    attachListeners();
+    startAllTimers();
+}
+
+function startAllTimers() {
+    questions[currentSubject].forEach((_,i)=>{
+        const key=currentSubject+i; timerSecs[key]=TOTAL_SECS;
+        timerIds[key]=setInterval(()=>tickTimer(i,key),1000);
+    });
+}
+function tickTimer(i,key){
+    timerSecs[key]--;
+    const s=timerSecs[key];
+    if(s<=0){clearInterval(timerIds[key]);timerIds[key]=null;updateTimerUI(i,0);autoReveal(i);return;}
+    updateTimerUI(i,s);
+}
+function updateTimerUI(i,secs){
+    const ring=document.getElementById('ring-'+i);
+    const txt=document.getElementById('timer-text-'+i);
+    if(!ring||!txt)return;
+    ring.querySelector('.fg').style.strokeDashoffset=CIRC*(1-secs/TOTAL_SECS);
+    ring.classList.remove('warning','danger');txt.classList.remove('warning','danger');
+    if(secs<=30){ring.classList.add('danger');txt.classList.add('danger');}
+    else if(secs<=60){ring.classList.add('warning');txt.classList.add('warning');}
+    const m=Math.floor(secs/60),sc=secs%60;
+    txt.textContent=m+':'+(sc<10?'0':'')+sc;
+}
+function stopTimer(i){const key=currentSubject+i;if(timerIds[key]){clearInterval(timerIds[key]);timerIds[key]=null;}}
+function clearAllTimers(){Object.keys(timerIds).forEach(k=>{if(timerIds[k])clearInterval(timerIds[k]);});timerIds={};timerSecs={};}
+function autoReveal(i){
+    const card=document.querySelector(`.question-card[data-index="${i}"]`);
+    if(!card||card.querySelector('.explanation.show'))return;
+    const ans=questions[currentSubject][i].ans;
+    card.querySelectorAll('.option').forEach(o=>{
+        if(o.dataset.answer===ans)o.classList.add('correct');
+        o.style.pointerEvents='none';
+    });
+    card.querySelector('.explanation').classList.add('show');
+    card.querySelector('.answer-btn').disabled=true;
+    const key=currentSubject+i;
+    if(!userAnswers[key]){userAnswers[key]='—';stats.answered++;updateStats();}
+}
+function attachListeners(){
+    document.querySelectorAll('.option').forEach(opt=>{
+        opt.addEventListener('click',function(){
+            const card=this.closest('.question-card');
+            const key=currentSubject+card.dataset.index;
+            if(this.style.pointerEvents==='none')return;
+            card.querySelectorAll('.option').forEach(o=>o.classList.remove('selected'));
+            this.classList.add('selected');
+            userAnswers[key]=this.dataset.answer;
+            card.querySelector('.answer-btn').disabled=false;
+        });
+    });
+    document.querySelectorAll('.answer-btn').forEach(btn=>{
+        btn.addEventListener('click',function(){
+            const card=this.closest('.question-card');
+            const index=+card.dataset.index;
+            const key=currentSubject+index;
+            const q=questions[currentSubject][index];
+            const isCorrect=userAnswers[key]===q.ans;
+            stopTimer(index);
+            card.querySelectorAll('.option').forEach(o=>{
+                if(o.dataset.answer===q.ans)o.classList.add('correct');
+                else if(o.dataset.answer===userAnswers[key])o.classList.add('wrong');
+                o.style.pointerEvents='none';
+            });
+            card.querySelector('.explanation').classList.add('show');
+            this.disabled=true;
+            stats.answered++;if(isCorrect)stats.correct++;updateStats();
+        });
+    });
+}
+function updateStats(){
+    document.getElementById('answered').textContent=stats.answered;
+    document.getElementById('correct').textContent=stats.correct;
+    const pct=stats.answered>0?Math.round(stats.correct/stats.answered*100):0;
+    document.getElementById('score').textContent=pct+'%';
+}
+document.querySelectorAll('.tab').forEach(tab=>{
+    tab.addEventListener('click',function(){
+        document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+        this.classList.add('active');
+        clearAllTimers();
+        currentSubject=this.dataset.subject;
+        userAnswers={};stats={answered:0,correct:0};
+        updateStats();renderQuestions();
+    });
+});
+renderQuestions();
+
+</script>
+</body>
+</html>
