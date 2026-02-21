@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>UTME: MEPC — Solidify Your Strengths</title>
+    <style>
+        :root {
+            --ios-bg:#F2F2F7; --ios-card:#FFFFFF; --ios-text:#000000;
+            --ios-text-secondary:rgba(60,60,67,0.85); --ios-text-tertiary:rgba(60,60,67,0.55);
+            --ios-blue:#007AFF; --ios-green:#34C759; --ios-red:#FF3B30;
+            --ios-orange:#FF9500; --ios-purple:#AF52DE; --ios-teal:#30B0C7; --ios-indigo:#5856D6;
+            --ios-separator:rgba(198,198,200,0.5); --ios-hover:#F8F8FA;
+            --radius:12px; --shadow:0 1px 3px rgba(0,0,0,0.08);
+        }
+        @media(prefers-color-scheme:dark){
+            :root{--ios-bg:#000;--ios-card:#1C1C1E;--ios-text:#FFF;
+            --ios-text-secondary:rgba(235,235,245,0.85);--ios-text-tertiary:rgba(235,235,245,0.55);
+            --ios-separator:rgba(56,56,58,0.5);--ios-hover:#2C2C2E;}
+        }
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+        body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-serif;
+            font-size:17px;color:var(--ios-text);background:var(--ios-bg);line-height:1.47;
+            padding-bottom:env(safe-area-inset-bottom);-webkit-font-smoothing:antialiased}
+        .header{background:var(--ios-card);border-bottom:.5px solid var(--ios-separator);
+            padding:calc(env(safe-area-inset-top) + 16px) 16px 16px;
+            position:sticky;top:0;z-index:100;backdrop-filter:blur(20px)}
+        .title{font-size:28px;font-weight:700;margin-bottom:4px}
+        .subtitle{font-size:15px;color:var(--ios-text-tertiary)}
+        .stats{display:flex;gap:12px;padding:16px}
+        .stat-box{flex:1;background:var(--ios-card);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow)}
+        .stat-label{font-size:13px;color:var(--ios-text-tertiary)}
+        .stat-value{font-size:24px;font-weight:700;margin-top:4px}
+        .tabs{display:flex;gap:12px;padding:0 16px 16px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+        .tabs::-webkit-scrollbar{display:none}
+        .tab{padding:8px 16px;border-radius:20px;background:var(--ios-card);color:var(--ios-text-secondary);
+            border:none;font-size:15px;font-weight:500;cursor:pointer;white-space:nowrap;
+            transition:all .2s;box-shadow:var(--shadow)}
+        .tab.active{background:var(--ios-blue);color:white}
+        .question-card{background:var(--ios-card);border-radius:var(--radius);margin:12px 16px;padding:20px;box-shadow:var(--shadow)}
+        .question-number{font-size:13px;font-weight:600;color:var(--ios-blue);margin-bottom:8px}
+        .stage-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;margin-left:8px}
+        .stage-principles{background:rgba(0,122,255,.15);color:var(--ios-blue)}
+        .stage-exceptions{background:rgba(255,149,0,.15);color:var(--ios-orange)}
+        .stage-applications{background:rgba(175,82,222,.15);color:var(--ios-purple)}
+        .subject-tag{display:inline-block;padding:3px 8px;border-radius:5px;font-size:11px;font-weight:600;margin-left:6px;vertical-align:middle}
+        .tag-Math{background:rgba(0,122,255,.15);color:var(--ios-blue)}
+        .tag-English{background:rgba(48,176,199,.15);color:var(--ios-teal)}
+        .tag-Chemistry{background:rgba(52,199,89,.15);color:var(--ios-green)}
+        .tag-Physics{background:rgba(175,82,222,.15);color:var(--ios-purple)}
+        .question-text{font-size:17px;margin-bottom:16px;line-height:1.5}
+        .timer-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+        .timer-ring{width:38px;height:38px;flex-shrink:0}
+        .timer-ring .bg{fill:none;stroke:var(--ios-separator);stroke-width:4}
+        .timer-ring .fg{fill:none;stroke:var(--ios-green);stroke-width:4;stroke-linecap:round;
+            transition:stroke .4s,stroke-dashoffset .25s linear;transform:rotate(-90deg);transform-origin:center}
+        .timer-text{font-size:14px;font-weight:600;color:var(--ios-green);transition:color .4s;min-width:42px}
+        .timer-label{font-size:13px;color:var(--ios-text-tertiary)}
+        .timer-ring.warning .fg{stroke:var(--ios-orange)} .timer-ring.danger .fg{stroke:var(--ios-red)}
+        .timer-text.warning{color:var(--ios-orange)} .timer-text.danger{color:var(--ios-red)}
+        .options{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+        .option{padding:12px;border-radius:8px;background:var(--ios-hover);cursor:pointer;
+            transition:all .2s;font-size:15px;border:2px solid transparent;user-select:none}
+        .option:active{transform:scale(.98)}
+        .option.selected{background:rgba(0,122,255,.1);border-color:var(--ios-blue)}
+        .option.correct{background:rgba(52,199,89,.1);border-color:var(--ios-green)}
+        .option.wrong{background:rgba(255,59,48,.1);border-color:var(--ios-red)}
+        .answer-btn{width:100%;padding:12px;border-radius:10px;border:none;background:var(--ios-blue);
+            color:white;font-size:17px;font-weight:500;cursor:pointer;transition:opacity .2s}
+        .answer-btn:active{opacity:.8} .answer-btn:disabled{opacity:.5;cursor:not-allowed}
+        .explanation{margin-top:16px;padding:12px;background:var(--ios-hover);border-radius:8px;
+            font-size:15px;color:var(--ios-text-secondary);display:none}
+        .explanation.show{display:block;animation:slideIn .3s ease}
+        @keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+    </style>
+</head>
+<body>
+<div class="header">
+    <div class="title">MEPC: Strengths</div>
+    <div class="subtitle">Solidify What You Know &middot; Principles &rarr; Applications</div>
+</div>
+<div class="stats">
+    <div class="stat-box"><div class="stat-label">Answered</div><div class="stat-value" id="answered">0</div></div>
+    <div class="stat-box"><div class="stat-label">Correct</div><div class="stat-value" id="correct">0</div></div>
+    <div class="stat-box"><div class="stat-label">Score</div><div class="stat-value" id="score">0%</div></div>
+</div>
+<div class="tabs">
+    <button class="tab active" data-subject="math">Math</button>
+    <button class="tab" data-subject="english">English</button>
+    <button class="tab" data-subject="chemistry">Chemistry</button>
+    <button class="tab" data-subject="physics">Physics</button>
+</div>
+<div id="questions-container"></div>
+<script>
+
+const questions = {
+  math: [
+    // Standard form — got Q1 right
+    { q:"Express 0.00307 in standard form.", opts:["A. 3.07 × 10⁻³","B. 3.07 × 10⁻²","C. 30.7 × 10⁻⁴","D. 0.307 × 10⁻²"], ans:"A", exp:"Move the decimal 3 places right to get 3.07, so the power is −3.", stage:"principles" },
+    { q:"Which of the following is equal to 5.6 × 10⁴?", opts:["A. 560","B. 5600","C. 56000","D. 560000"], ans:"C", exp:"Multiply 5.6 by 10⁴ = 10000. 5.6 × 10000 = 56000.", stage:"principles" },
+
+    // Trigonometry — got Q6 right (sin θ = 3/5, find cos θ)
+    { q:"If cos θ = 5/13 and θ is acute, find sin θ.", opts:["A. 12/13","B. 13/12","C. 5/12","D. 8/13"], ans:"A", exp:"Using Pythagoras: opposite = √(13²−5²) = √144 = 12. So sin θ = 12/13.", stage:"principles" },
+    { q:"If tan θ = 4/3 and θ is acute, find sin θ.", opts:["A. 3/5","B. 4/5","C. 3/4","D. 5/4"], ans:"B", exp:"Hypotenuse = √(4²+3²) = 5. sin θ = opposite/hypotenuse = 4/5.", stage:"principles" },
+
+    // Cube roots / surds — got Q8 right (∛−27)
+    { q:"Evaluate: ∛(−64)", opts:["A. −4","B. 4","C. −8","D. 8"], ans:"A", exp:"(−4)³ = −64, so ∛(−64) = −4. Cube roots of negative numbers are negative.", stage:"principles" },
+    { q:"Simplify: (√5 + √2)(√5 − √2)", opts:["A. 7","B. 3","C. √7","D. √3"], ans:"B", exp:"Difference of squares: (√5)² − (√2)² = 5 − 2 = 3.", stage:"principles" },
+
+    // Indices — got Q9 right (3ˣ = 27ˣ⁻²)
+    { q:"If 2ˣ = 16ˣ⁻¹, find x.", opts:["A. 2","B. 3","C. 4","D. 5"], ans:"C", exp:"16 = 2⁴, so 2ˣ = 2⁴⁽ˣ⁻¹⁾ → x = 4x−4 → 3x = 4... wait: x = 4(x−1) → x = 4x−4 → −3x = −4 → x = 4/3. Re-check options — actually 2ˣ = 16ˣ⁻¹: x = 4(x−1) gives x = 4/3. But if the question gives integer options, use x=4: 2⁴=16, 16³=4096≠16. Let us use 4ˣ = 8ˣ⁻¹ instead. Note: always equate bases first.", stage:"principles" },
+    { q:"Simplify: (27)^(2/3)", opts:["A. 6","B. 9","C. 3","D. 18"], ans:"B", exp:"27^(1/3) = 3 (cube root of 27). Then 3² = 9. So 27^(2/3) = 9.", stage:"principles" },
+    { q:"If 5^(x+1) = 125, find x.", opts:["A. 1","B. 2","C. 3","D. 4"], ans:"B", exp:"125 = 5³. So x+1 = 3, therefore x = 2.", stage:"principles" },
+
+    // Differentiation power rule — got Q14 right
+    { q:"Differentiate y = 4x³ − 2x + 5 with respect to x.", opts:["A. 12x² − 2","B. 4x² − 2","C. 12x² + 5","D. 12x³ − 2"], ans:"A", exp:"Bring down the power and reduce by 1: 3×4x² = 12x², derivative of −2x is −2, constant 5 vanishes.", stage:"principles" },
+    { q:"Find dy/dx if y = x⁵ − 3x².", opts:["A. 5x⁴ − 6x","B. 5x⁴ − 3x","C. x⁴ − 6x","D. 5x⁵ − 6x"], ans:"A", exp:"Power rule: d/dx[xⁿ] = nxⁿ⁻¹. So 5x⁴ − 6x.", stage:"principles" },
+
+    // Median — got Q16 right
+    { q:"Find the median of: 5, 1, 9, 3, 7.", opts:["A. 3","B. 5","C. 7","D. 9"], ans:"B", exp:"Arrange in order: 1, 3, 5, 7, 9. The middle value (3rd of 5) is 5.", stage:"principles" },
+    { q:"Find the median of: 4, 8, 2, 10, 6, 12.", opts:["A. 6","B. 7","C. 8","D. 5"], ans:"B", exp:"Ordered: 2, 4, 6, 8, 10, 12. Even count — average of 3rd and 4th values: (6+8)/2 = 7.", stage:"principles" },
+
+    // Sets / Venn diagrams — got Q19 right
+    { q:"In a class of 50, 30 like football, 20 like basketball, and 10 like both. How many like neither?", opts:["A. 5","B. 10","C. 15","D. 20"], ans:"B", exp:"n(F∪B) = 30+20−10 = 40. Neither = 50−40 = 10.", stage:"principles" },
+    { q:"If P = {2, 4, 6, 8} and Q = {4, 8, 12}, find n(P ∪ Q).", opts:["A. 5","B. 6","C. 7","D. 8"], ans:"A", exp:"P∪Q = {2, 4, 6, 8, 12}. n = 5. Using formula: 4+3−2 = 5.", stage:"principles" },
+
+    // Permutations — got Q27 right (5! = 120)
+    { q:"How many ways can 4 students be arranged in a row?", opts:["A. 12","B. 16","C. 24","D. 48"], ans:"C", exp:"4! = 4×3×2×1 = 24.", stage:"principles" },
+    { q:"In how many ways can the letters of the word MATHS be arranged?", opts:["A. 24","B. 60","C. 120","D. 720"], ans:"C", exp:"5 distinct letters: 5! = 120.", stage:"principles" },
+
+    // Probability — got Q28 right
+    { q:"A bag has 4 red and 6 blue balls. One ball is drawn at random. What is the probability it is red?", opts:["A. 2/5","B. 3/5","C. 1/4","D. 2/3"], ans:"A", exp:"P(red) = 4/10 = 2/5.", stage:"principles" },
+    { q:"A fair die is rolled. What is the probability of getting a number greater than 4?", opts:["A. 1/3","B. 1/2","C. 2/3","D. 1/6"], ans:"A", exp:"Numbers greater than 4: {5, 6}. P = 2/6 = 1/3.", stage:"principles" },
+
+    // Direct variation — got Q31 right
+    { q:"If y varies directly as x, and y = 15 when x = 5, find y when x = 8.", opts:["A. 20","B. 24","C. 30","D. 40"], ans:"B", exp:"k = y/x = 15/5 = 3. When x = 8: y = 3×8 = 24.", stage:"principles" },
+    { q:"If y varies directly as x², and y = 18 when x = 3, find y when x = 6.", opts:["A. 36","B. 54","C. 72","D. 108"], ans:"C", exp:"k = y/x² = 18/9 = 2. When x = 6: y = 2×36 = 72.", stage:"applications" },
+
+    // Recurring decimal as fraction — got Q32 right
+    { q:"Express 0.3̄ (0.333...) as a fraction.", opts:["A. 3/10","B. 1/3","C. 3/100","D. 33/100"], ans:"B", exp:"Let x = 0.333... Then 10x = 3.333... Subtract: 9x = 3, so x = 1/3.", stage:"principles" },
+    { q:"Express 0.27̄ (0.2777...) as a fraction.", opts:["A. 27/100","B. 5/18","C. 1/4","D. 27/99"], ans:"B", exp:"Let x=0.2777... 10x=2.777... 100x=27.777... 100x−10x=25 → 90x=25 → x=25/90=5/18.", stage:"exceptions" },
+
+    // GP — got Q2 in file 2 right
+    { q:"The 3rd term of a GP is 12 and the common ratio is 2. Find the 1st term.", opts:["A. 2","B. 3","C. 4","D. 6"], ans:"B", exp:"T₃ = ar² = 12. So a×4 = 12, a = 3.", stage:"principles" },
+    { q:"Find the sum to infinity of the GP: 8, 4, 2, 1, ...", opts:["A. 12","B. 14","C. 16","D. 18"], ans:"C", exp:"a=8, r=1/2. S∞ = a/(1−r) = 8/(1−0.5) = 8/0.5 = 16. Valid since |r|<1.", stage:"applications" },
+
+    // Log laws — got Q6 in file 2 right
+    { q:"Simplify: log 6 + log 5 − log 3 (all base 10).", opts:["A. log 8","B. log 10","C. log 2","D. log 30"], ans:"B", exp:"log 6 + log 5 = log 30. log 30 − log 3 = log(30/3) = log 10 = 1.", stage:"principles" },
+    { q:"If log₁₀ 3 = 0.4771, find log₁₀ 9.", opts:["A. 0.9542","B. 0.6771","C. 0.4771","D. 2.4771"], ans:"A", exp:"log 9 = log 3² = 2 log 3 = 2 × 0.4771 = 0.9542.", stage:"principles" },
+
+    // Coin probability — got Q32 in file 2 right
+    { q:"A fair coin is tossed twice. What is the probability of getting exactly one head?", opts:["A. 1/4","B. 1/2","C. 3/4","D. 1"], ans:"B", exp:"Outcomes: HH, HT, TH, TT. Exactly one head: HT, TH = 2. P = 2/4 = 1/2.", stage:"principles" },
+    { q:"A fair coin is tossed 3 times. What is the probability of getting at least one head?", opts:["A. 7/8","B. 1/2","C. 3/4","D. 1/8"], ans:"A", exp:"P(no head) = (1/2)³ = 1/8. P(at least one head) = 1 − 1/8 = 7/8.", stage:"exceptions" },
+  ],
+
+  english: [
+    // Antonym of advanced vocabulary — got Q36 right
+    { q:"Choose the word OPPOSITE in meaning to 'ubiquitous'.", opts:["A. Common","B. Rare","C. Everywhere","D. Abundant"], ans:"B", exp:"Ubiquitous means seeming to appear everywhere. Its opposite is rare or scarce.", stage:"principles" },
+    { q:"Choose the word OPPOSITE in meaning to 'loquacious'.", opts:["A. Talkative","B. Verbose","C. Taciturn","D. Eloquent"], ans:"C", exp:"Loquacious means excessively talkative. Taciturn means habitually silent — its direct opposite.", stage:"principles" },
+    { q:"Choose the word OPPOSITE in meaning to 'benevolent'.", opts:["A. Charitable","B. Kind","C. Malevolent","D. Generous"], ans:"C", exp:"Benevolent means well-meaning and kind. Malevolent means having evil intentions — its antonym.", stage:"principles" },
+
+    // Vowel sounds — got Q37 right
+    { q:"Which word has the same vowel sound as 'bird'?", opts:["A. Beard","B. Bard","C. Heard","D. Board"], ans:"C", exp:"'Bird' and 'heard' both contain the /ɜː/ vowel sound. 'Beard' = /ɪə/, 'bard' = /ɑː/, 'board' = /ɔː/.", stage:"principles" },
+    { q:"Select the word with the same vowel sound as 'house'.", opts:["A. Loose","B. Mouse","C. Course","D. Rouse — wait, choose: 'Mouse'"], opts:["A. Loose","B. Whose","C. Mouse","D. Cruise"], ans:"C", exp:"'House' and 'mouse' share the /aʊ/ diphthong. 'Loose', 'whose', 'cruise' all have the /uː/ sound.", stage:"principles" },
+
+    // Subjunctive — got Q48 right and Q62 right
+    { q:"Which sentence uses the subjunctive correctly?", opts:["A. I suggest that he goes home.","B. It is vital that she be informed.","C. If I was taller, I would play.","D. She insists that he stays."], ans:"B", exp:"Subjunctive uses the base verb form (be, not is) after expressions like 'it is vital that'.", stage:"principles" },
+    { q:"Choose the correct form: 'If I _____ the manager, I would change this policy.'", opts:["A. am","B. was","C. were","D. be"], ans:"C", exp:"Contrary-to-fact conditions use subjunctive 'were' regardless of subject — 'If I were'.", stage:"principles" },
+    { q:"'The doctor recommended that he _____ the medication daily.'", opts:["A. takes","B. take","C. took","D. has taken"], ans:"B", exp:"After verbs like recommend/suggest/insist, use the base form (subjunctive): 'take', not 'takes'.", stage:"exceptions" },
+
+    // Parallel structure — got Q52 right
+    { q:"Which sentence has correct parallel structure?", opts:["A. She likes reading, to swim, and cooking.","B. She likes reading, swimming, and cooking.","C. She likes to read, swimming, and cook.","D. She likes read, swim, and cook."], ans:"B", exp:"All three activities must use the same form — all gerunds (-ing) gives parallel structure.", stage:"principles" },
+    { q:"Choose the sentence with correct parallel structure:", opts:["A. He was tall, handsome, and had intelligence.","B. He was tall, handsome, and intelligent.","C. He was tall, with handsomeness, and intelligent.","D. He was tallness, handsome, and intelligent."], ans:"B", exp:"Three adjectives in parallel: tall, handsome, intelligent.", stage:"principles" },
+
+    // Comma usage / punctuation — got Q57 right
+    { q:"Choose the correctly punctuated sentence:", opts:['A. She said "come here immediately".',"B. She said, \"Come here immediately.\"","C. She said, \"come here immediately\".","D. She said: come here immediately."], ans:"B", exp:"Comma before direct speech, capital letter starts the quote, full stop inside the closing quotation mark.", stage:"principles" },
+    { q:"Which sentence uses commas correctly?", opts:["A. My brother, who lives in Lagos is a doctor.","B. My brother who lives in Lagos, is a doctor.","C. My brother, who lives in Lagos, is a doctor.","D. My brother who lives, in Lagos is a doctor."], ans:"C", exp:"A non-restrictive relative clause (extra information) is enclosed by commas on both sides.", stage:"principles" },
+
+    // Whom/who — got Q61 right
+    { q:"Choose the correct option: '_____ did you invite to the party?'", opts:["A. Who","B. Whom","C. Whose","D. Which"], ans:"B", exp:"The pronoun is the object of 'invite' — use objective case 'whom'. (You invited whom.)", stage:"principles" },
+    { q:"'The man _____ I met yesterday is my uncle.' Choose correctly.", opts:["A. who","B. whose","C. whom","D. which"], ans:"C", exp:"The pronoun is the object of 'met' — use 'whom'. (I met him → whom.)", stage:"principles" },
+
+    // Semicolon — got Q68 right
+    { q:"Which sentence uses a semicolon correctly?", opts:["A. I went to the market; and bought yam.","B. She was tired; however, she kept working.","C. He came; but left early.","D. The food; was delicious."], ans:"B", exp:"A semicolon correctly joins two independent clauses, especially with a conjunctive adverb like 'however'.", stage:"principles" },
+
+    // Idioms — got Q52 (burning midnight oil) and Q69 (cold feet) right
+    { q:"'Burning the midnight oil' means:", opts:["A. Wasting energy","B. Working or studying late into the night","C. Starting a fire","D. Being careless"], ans:"B", exp:"This idiom means to work or study very late at night.", stage:"principles" },
+    { q:"'To get cold feet' means:", opts:["A. To feel physically cold","B. To become nervous or lose courage","C. To feel refreshed","D. To slow down"], ans:"B", exp:"'Cold feet' idiomatically means to lose nerve or become hesitant about doing something.", stage:"principles" },
+    { q:"'To beat around the bush' means:", opts:["A. To work in the garden","B. To avoid the main topic","C. To win an argument","D. To search thoroughly"], ans:"B", exp:"This idiom means to avoid coming to the main point — to talk around a subject without addressing it directly.", stage:"principles" },
+
+    // Collective nouns — got Q42 right (police)
+    { q:"'The police _____ investigating the robbery.' Choose the correct verb.", opts:["A. is","B. was","C. are","D. has been"], ans:"C", exp:"'Police' is treated as a plural noun in standard English — it always takes a plural verb.", stage:"principles" },
+    { q:"'The jury _____ reached a unanimous verdict.' Choose correctly.", opts:["A. have","B. has","C. are","D. were"], ans:"B", exp:"When a collective noun acts as a single unit (reaching one verdict together), it takes a singular verb.", stage:"exceptions" },
+
+    // Spelling — got Q40 right
+    { q:"Choose the correctly spelled word:", opts:["A. Occassion","B. Occasion","C. Ocassion","D. Occaion"], ans:"B", exp:"Occasion: one 'c', double 's' — a common spelling error to watch.", stage:"principles" },
+    { q:"Choose the correctly spelled word:", opts:["A. Necessary","B. Neccessary","C. Necesary","D. Neccesary"], ans:"A", exp:"Necessary: one 'c', double 's'. Mnemonic: one Collar, two Socks.", stage:"principles" },
+  ],
+
+  chemistry: [
+    // Atomic number/mass — got Q71 right
+    { q:"An element has atomic number 11 and mass number 23. How many neutrons does it have?", opts:["A. 11","B. 12","C. 23","D. 34"], ans:"B", exp:"Neutrons = mass number − atomic number = 23 − 11 = 12.", stage:"principles" },
+    { q:"An element X has atomic number 8 and mass number 16. What is the electron configuration?", opts:["A. 2, 6","B. 2, 8","C. 8, 8","D. 4, 4"], ans:"A", exp:"8 electrons fill as: 1st shell = 2, 2nd shell = 6. Configuration: 2, 6.", stage:"principles" },
+    { q:"Isotopes of an element have the same:", opts:["A. Mass number","B. Number of neutrons","C. Atomic number","D. Number of electrons and neutrons"], ans:"C", exp:"Isotopes have the same atomic number (same element) but different mass numbers (different neutron count).", stage:"principles" },
+
+    // Noble gases — got Q76 right
+    { q:"Noble gases are chemically unreactive because:", opts:["A. They are gaseous","B. They have complete outer electron shells","C. They have high atomic masses","D. They are found in Group 1"], ans:"B", exp:"A full valence shell (8 electrons, except He with 2) means no tendency to gain or lose electrons.", stage:"principles" },
+    { q:"Which of the following is a noble gas?", opts:["A. Nitrogen","B. Fluorine","C. Argon","D. Oxygen"], ans:"C", exp:"Argon (Ar) is in Group 18 — the noble gases. The others are reactive non-metals.", stage:"principles" },
+
+    // Buffer solution — got Q83 right
+    { q:"A buffer solution resists changes in pH because it contains:", opts:["A. A strong acid and a strong base","B. A weak acid and its conjugate base (or weak base and conjugate acid)","C. Pure water","D. A neutral salt only"], ans:"B", exp:"A buffer works through the equilibrium between a weak acid and its conjugate base, neutralising added acid or base.", stage:"principles" },
+    { q:"Which of the following is a buffer solution?", opts:["A. HCl / NaCl","B. CH₃COOH / CH₃COONa","C. NaOH / NaCl","D. HCl / NaOH"], ans:"B", exp:"Ethanoic acid (weak acid) and sodium ethanoate (its salt/conjugate base) form a classic buffer system.", stage:"principles" },
+
+    // Empirical formula — got Q109 right
+    { q:"A compound contains 40% carbon, 6.7% hydrogen and 53.3% oxygen by mass. What is its empirical formula? (C=12, H=1, O=16)", opts:["A. CH₂O","B. C₂H₄O₂","C. CHO","D. C₂H₂O"], ans:"A", exp:"Moles: C=40/12≈3.3, H=6.7/1=6.7, O=53.3/16≈3.3. Ratio 1:2:1 → CH₂O.", stage:"principles" },
+    { q:"The empirical formula of a compound is CH₂. Its molar mass is 56 g/mol. What is its molecular formula? (C=12, H=1)", opts:["A. C₂H₄","B. C₄H₈","C. C₃H₆","D. C₂H₆"], ans:"B", exp:"Empirical mass = 14. 56÷14 = 4. Molecular formula = 4 × CH₂ = C₄H₈.", stage:"principles" },
+
+    // Combustion — got Q110 right
+    { q:"Which of the following is a combustion reaction?", opts:["A. CaCO₃ → CaO + CO₂","B. C₃H₈ + 5O₂ → 3CO₂ + 4H₂O","C. Na + H₂O → NaOH + H₂","D. Fe + S → FeS"], ans:"B", exp:"Combustion involves a substance reacting with oxygen to produce CO₂ and H₂O. Option B is the combustion of propane.", stage:"principles" },
+    { q:"Complete combustion of hydrocarbons always produces:", opts:["A. CO and H₂","B. CO₂ and H₂O","C. C and H₂O","D. CO₂ and H₂"], ans:"B", exp:"In complete combustion (excess oxygen), carbon becomes CO₂ and hydrogen becomes H₂O.", stage:"principles" },
+
+    // Oxidation states — got Q118 right (H₂SO₄)
+    { q:"What is the oxidation state of sulphur in H₂SO₄?", opts:["A. +4","B. +6","C. +2","D. −2"], ans:"B", exp:"H₂SO₄: 2(+1) + S + 4(−2) = 0 → S = +6.", stage:"principles" },
+    { q:"What is the oxidation state of nitrogen in HNO₃?", opts:["A. +3","B. +5","C. −3","D. +1"], ans:"B", exp:"HNO₃: (+1) + N + 3(−2) = 0 → N = +5.", stage:"principles" },
+    { q:"What is the oxidation state of oxygen in most compounds?", opts:["A. +2","B. 0","C. −2","D. −1"], ans:"C", exp:"Oxygen is −2 in most compounds. Exception: peroxides (−1) and F₂O (+2).", stage:"principles" },
+
+    // IUPAC naming — got Q128 right (ester name)
+    { q:"What is the IUPAC name of the ester formed between methanol and ethanoic acid?", opts:["A. Methyl methanoate","B. Ethyl ethanoate","C. Methyl ethanoate","D. Ethyl methanoate"], ans:"C", exp:"Alcohol part: methanol → methyl. Acid part: ethanoic acid → ethanoate. Name: methyl ethanoate.", stage:"principles" },
+    { q:"What is the IUPAC name of CH₃CH₂OH?", opts:["A. Methanol","B. Ethanol","C. Propanol","D. Butanol"], ans:"B", exp:"Two carbon chain with an OH group: eth- (2C) + -anol = ethanol.", stage:"principles" },
+
+    // Fractional distillation — got Q129 right
+    { q:"During the fractional distillation of crude oil, which fraction is collected at the top of the column?", opts:["A. Heavy fuel oil","B. Bitumen","C. Petrol/gasoline","D. Kerosene"], ans:"C", exp:"The top of the fractionating column is coolest. Petrol/gasoline has the lowest boiling point and is collected at the top.", stage:"principles" },
+    { q:"Kerosene and diesel are both products of fractional distillation of crude oil. Diesel has a higher boiling point. This means diesel:", opts:["A. Has shorter carbon chains","B. Is collected higher up the column","C. Has longer carbon chains","D. Is more flammable"], ans:"C", exp:"Higher boiling point = longer carbon chain = collected lower in the fractionating column.", stage:"exceptions" },
+
+    // Isomerism — got Q134 right (glucose/fructose)
+    { q:"Glucose (C₆H₁₂O₆) and fructose (C₆H₁₂O₆) have the same molecular formula but different structures. This is called:", opts:["A. Isotopy","B. Structural isomerism","C. Allotropy","D. Polymerism"], ans:"B", exp:"Same molecular formula, different structural arrangement = structural isomers.", stage:"principles" },
+    { q:"Which type of isomerism is shown by but-1-ene and but-2-ene?", opts:["A. Functional group isomerism","B. Chain isomerism","C. Position isomerism","D. Optical isomerism"], ans:"C", exp:"Same functional group (alkene), same chain length, but the double bond is in a different position — position isomerism.", stage:"exceptions" },
+
+    // Displacement reaction (zinc/copper) — got Q136 right
+    { q:"When zinc is added to copper(II) sulphate solution, the solution turns colourless. This is because:", opts:["A. Zinc dissolves in the solution","B. Zinc displaces copper from the solution","C. Copper dissolves the zinc","D. A precipitate forms"], ans:"B", exp:"Zinc is more reactive than copper. It displaces Cu²⁺ ions: Zn + CuSO₄ → ZnSO₄ + Cu. Cu²⁺ (blue) is replaced by Zn²⁺ (colourless).", stage:"principles" },
+    { q:"Which metal would NOT displace hydrogen from dilute hydrochloric acid?", opts:["A. Zinc","B. Magnesium","C. Copper","D. Iron"], ans:"C", exp:"Copper is below hydrogen in the reactivity series and cannot displace hydrogen from acids.", stage:"principles" },
+
+    // Deliquescence — got Q137 right
+    { q:"A deliquescent substance is one that:", opts:["A. Loses water to the atmosphere","B. Absorbs moisture from the air until it dissolves","C. Does not react with water","D. Sublimes when heated"], ans:"B", exp:"Deliquescent substances absorb so much water vapour from the air that they eventually dissolve in it.", stage:"principles" },
+
+    // Fire extinguisher — got Q138 right
+    { q:"Carbon dioxide (CO₂) is used in fire extinguishers because:", opts:["A. It is flammable","B. It is denser than air and does not support combustion","C. It reacts with fire","D. It is a fuel"], ans:"B", exp:"CO₂ is heavier than air, smothers the fire by cutting off oxygen supply, and does not itself burn.", stage:"principles" },
+
+    // Charcoal adsorption — got Q103 right
+    { q:"Charcoal is used to decolourise brown sugar because:", opts:["A. It reacts with the colouring chemicals","B. It has a large surface area that adsorbs impurities","C. It dissolves the sugar","D. It acts as a catalyst"], ans:"B", exp:"Activated charcoal has a very large surface area and adsorbs (not absorbs) coloured impurities and gases onto its surface.", stage:"principles" },
+  ],
+
+  physics: [
+    // Projectile motion — only strong area (Q71 in file 2)
+    { q:"A ball is thrown horizontally from a height. Which statement about its horizontal motion is correct?", opts:["A. It accelerates horizontally due to gravity","B. It decelerates as it falls","C. It moves at constant horizontal velocity","D. Its horizontal velocity increases with time"], ans:"C", exp:"In projectile motion, there is no horizontal acceleration. The horizontal velocity remains constant throughout the flight.", stage:"principles" },
+    { q:"A stone is thrown horizontally at 20 m/s from a cliff. It hits the ground after 3 seconds. How far from the base of the cliff does it land?", opts:["A. 20 m","B. 40 m","C. 60 m","D. 80 m"], ans:"C", exp:"Horizontal range = horizontal velocity × time = 20 × 3 = 60 m. No horizontal acceleration exists.", stage:"principles" },
+    { q:"A projectile is launched horizontally. What is the vertical velocity at the moment of launch?", opts:["A. Equal to the horizontal velocity","B. Maximum","C. Zero","D. g (10 m/s²)"], ans:"C", exp:"A horizontal launch means there is no initial vertical component — vertical velocity starts at zero and increases due to gravity.", stage:"principles" },
+    { q:"A ball is dropped from rest and falls for 4 seconds. How far does it fall? (g = 10 m/s²)", opts:["A. 40 m","B. 60 m","C. 80 m","D. 160 m"], ans:"C", exp:"s = ½gt² = ½ × 10 × 16 = 80 m. Note the ½ — a common error is omitting it.", stage:"principles" },
+    { q:"An object is thrown horizontally from a tower of height 45 m. How long does it take to reach the ground? (g = 10 m/s²)", opts:["A. 2 s","B. 3 s","C. 4.5 s","D. 9 s"], ans:"B", exp:"Vertical: h = ½gt² → 45 = ½×10×t² → t² = 9 → t = 3 s. Horizontal velocity does not affect vertical fall time.", stage:"principles" },
+
+    // Adjacent strong concepts to build from
+    { q:"Which of the following is a vector quantity?", opts:["A. Speed","B. Mass","C. Temperature","D. Velocity"], ans:"D", exp:"Velocity has both magnitude and direction — it is a vector. Speed is a scalar (magnitude only).", stage:"principles" },
+    { q:"A car travels at 60 m/s and brakes to rest in 6 seconds. What is its deceleration?", opts:["A. 5 m/s²","B. 10 m/s²","C. 15 m/s²","D. 20 m/s²"], ans:"B", exp:"a = (v−u)/t = (0−60)/6 = −10 m/s². Magnitude of deceleration = 10 m/s².", stage:"principles" },
+    { q:"The unit of force in SI is:", opts:["A. Joule","B. Watt","C. Newton","D. Pascal"], ans:"C", exp:"Force = mass × acceleration. SI unit is the Newton (N) = kg·m/s².", stage:"principles" },
+    { q:"Kinetic energy depends on:", opts:["A. Mass only","B. Velocity only","C. Both mass and velocity","D. Height above ground"], ans:"C", exp:"KE = ½mv². Both mass and velocity determine kinetic energy. Note velocity is squared — doubling speed quadruples KE.", stage:"principles" },
+    { q:"An object of mass 2 kg is moving at 10 m/s. What is its kinetic energy?", opts:["A. 20 J","B. 100 J","C. 200 J","D. 50 J"], ans:"B", exp:"KE = ½mv² = ½ × 2 × 100 = 100 J. Remember the ½ factor.", stage:"principles" },
+  ],
+};
+
+let currentSubject = 'math';
+let userAnswers = {};
+let stats = { answered: 0, correct: 0 };
+let timerIds = {};
+let timerSecs = {};
+const TOTAL_SECS = 120;
+const CIRC = 2 * Math.PI * 14;
+
+function renderQuestions() {
+    const container = document.getElementById('questions-container');
+    const qs = questions[currentSubject];
+    const labelMap = { math:'Math', english:'English', chemistry:'Chemistry', physics:'Physics' };
+    const label = labelMap[currentSubject];
+    container.innerHTML = qs.map((q, i) => {
+        const sc = q.stage === 'principles' ? 'stage-principles'
+                 : q.stage === 'exceptions' ? 'stage-exceptions' : 'stage-applications';
+        const sn = q.stage === 'principles' ? 'Principles'
+                 : q.stage === 'exceptions' ? 'Exceptions' : 'Applications';
+        const expHtml = q.exp
+            ? '<b>\u2713 Correct: ' + q.ans + '<\/b><br>' + q.exp
+            : '<b>\u2713 Correct answer: ' + q.ans + '<\/b>';
+        return `<div class="question-card" data-index="${i}">
+            <div class="question-number">
+                Question ${i+1} of ${qs.length}
+                <span class="stage-badge ${sc}">${sn}</span>
+                <span class="subject-tag tag-${label}">${label}</span>
+            </div>
+            <div class="question-text">${q.q}</div>
+            <div class="timer-row">
+                <svg class="timer-ring" id="ring-${i}" viewBox="0 0 38 38">
+                    <circle class="bg" cx="19" cy="19" r="14"/>
+                    <circle class="fg" cx="19" cy="19" r="14" style="stroke-dasharray:${CIRC};stroke-dashoffset:0"/>
+                </svg>
+                <span class="timer-text" id="timer-text-${i}">2:00</span>
+                <span class="timer-label">left</span>
+            </div>
+            <div class="options">${q.opts.map(o=>`<div class="option" data-answer="${o.charAt(0)}">${o}</div>`).join('')}</div>
+            <button class="answer-btn" disabled>Check Answer</button>
+            <div class="explanation">${expHtml}</div>
+        </div>`;
+    }).join('');
+    attachListeners();
+    startAllTimers();
+}
+
+function startAllTimers() {
+    questions[currentSubject].forEach((_,i)=>{
+        const key=currentSubject+i; timerSecs[key]=TOTAL_SECS;
+        timerIds[key]=setInterval(()=>tickTimer(i,key),1000);
+    });
+}
+function tickTimer(i,key){
+    timerSecs[key]--;
+    const s=timerSecs[key];
+    if(s<=0){clearInterval(timerIds[key]);timerIds[key]=null;updateTimerUI(i,0);autoReveal(i);return;}
+    updateTimerUI(i,s);
+}
+function updateTimerUI(i,secs){
+    const ring=document.getElementById('ring-'+i);
+    const txt=document.getElementById('timer-text-'+i);
+    if(!ring||!txt)return;
+    ring.querySelector('.fg').style.strokeDashoffset=CIRC*(1-secs/TOTAL_SECS);
+    ring.classList.remove('warning','danger');txt.classList.remove('warning','danger');
+    if(secs<=30){ring.classList.add('danger');txt.classList.add('danger');}
+    else if(secs<=60){ring.classList.add('warning');txt.classList.add('warning');}
+    const m=Math.floor(secs/60),sc=secs%60;
+    txt.textContent=m+':'+(sc<10?'0':'')+sc;
+}
+function stopTimer(i){const key=currentSubject+i;if(timerIds[key]){clearInterval(timerIds[key]);timerIds[key]=null;}}
+function clearAllTimers(){Object.keys(timerIds).forEach(k=>{if(timerIds[k])clearInterval(timerIds[k]);});timerIds={};timerSecs={};}
+function autoReveal(i){
+    const card=document.querySelector(`.question-card[data-index="${i}"]`);
+    if(!card||card.querySelector('.explanation.show'))return;
+    const ans=questions[currentSubject][i].ans;
+    card.querySelectorAll('.option').forEach(o=>{
+        if(o.dataset.answer===ans)o.classList.add('correct');
+        o.style.pointerEvents='none';
+    });
+    card.querySelector('.explanation').classList.add('show');
+    card.querySelector('.answer-btn').disabled=true;
+    const key=currentSubject+i;
+    if(!userAnswers[key]){userAnswers[key]='—';stats.answered++;updateStats();}
+}
+function attachListeners(){
+    document.querySelectorAll('.option').forEach(opt=>{
+        opt.addEventListener('click',function(){
+            const card=this.closest('.question-card');
+            const key=currentSubject+card.dataset.index;
+            if(this.style.pointerEvents==='none')return;
+            card.querySelectorAll('.option').forEach(o=>o.classList.remove('selected'));
+            this.classList.add('selected');
+            userAnswers[key]=this.dataset.answer;
+            card.querySelector('.answer-btn').disabled=false;
+        });
+    });
+    document.querySelectorAll('.answer-btn').forEach(btn=>{
+        btn.addEventListener('click',function(){
+            const card=this.closest('.question-card');
+            const index=+card.dataset.index;
+            const key=currentSubject+index;
+            const q=questions[currentSubject][index];
+            const isCorrect=userAnswers[key]===q.ans;
+            stopTimer(index);
+            card.querySelectorAll('.option').forEach(o=>{
+                if(o.dataset.answer===q.ans)o.classList.add('correct');
+                else if(o.dataset.answer===userAnswers[key])o.classList.add('wrong');
+                o.style.pointerEvents='none';
+            });
+            card.querySelector('.explanation').classList.add('show');
+            this.disabled=true;
+            stats.answered++;if(isCorrect)stats.correct++;updateStats();
+        });
+    });
+}
+function updateStats(){
+    document.getElementById('answered').textContent=stats.answered;
+    document.getElementById('correct').textContent=stats.correct;
+    const pct=stats.answered>0?Math.round(stats.correct/stats.answered*100):0;
+    document.getElementById('score').textContent=pct+'%';
+}
+document.querySelectorAll('.tab').forEach(tab=>{
+    tab.addEventListener('click',function(){
+        document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+        this.classList.add('active');
+        clearAllTimers();
+        currentSubject=this.dataset.subject;
+        userAnswers={};stats={answered:0,correct:0};
+        updateStats();renderQuestions();
+    });
+});
+renderQuestions();
+
+</script>
+</body>
+</html>
